@@ -1,0 +1,5 @@
+latex hpdc_mr_ws
+bibtex hpdc_mr_ws
+latex hpdc_mr_ws
+latex hpdc_mr_ws
+dvipdfm hpdc_mr_ws
