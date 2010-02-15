@@ -76,24 +76,24 @@
 %
 % 1st. author
 \alignauthor
-Ben Trovato\\
-       \affaddr{Institute for Clarity in Documentation}\\
-       \affaddr{1932 Wallamaloo Lane}\\
-       \affaddr{Wallamaloo, New Zealand}\\
-       \email{trovato@corporation.com}
+Kyungyong Lee\\
+       \affaddr{ACIS Lab.}\\
+       \affaddr{Computer Engineering}\\
+       \affaddr{University of Florida}\\
+       \email{klee@acis.ufl.edu}
 % 2nd. author
 \alignauthor
-G.K.M. Tobin\\
-       \affaddr{Institute for Clarity in Documentation}\\
-       \affaddr{P.O. Box 1212}\\
-       \affaddr{Dublin, Ohio 43017-6221}\\
-       \email{webmaster@m.com}
+Renato Figueiredo\\
+       \affaddr{ACIS Lab.}\\
+       \affaddr{Computer Engineering}\\
+       \affaddr{University of Florida}\\
+       \email{renato@acis.ufl.edu}
 \alignauthor
-G.K.M. Tobin\\
-       \affaddr{Institute for Clarity in Documentation}\\
-       \affaddr{P.O. Box 1212}\\
-       \affaddr{Dublin, Ohio 43017-6221}\\
-       \email{webmaster@m.com}
+P. Oscar Boykin\\
+       \affaddr{ACIS Lab.}\\
+       \affaddr{Computer Engineering}\\
+       \affaddr{University of Florida}\\
+       \email{boykin@acis.ufl.edu}
 }
 \maketitle
 \begin{abstract}
@@ -117,10 +117,10 @@ Our MapReduce-based query system is currently deployed on PlanetLab while built 
 \keywords{ACM proceedings} % NOT required for Proceedings
 
 \section{Introduction}
-The growth of computing power in workstations and personal computers attracts substantial interest in computing clusters and desktop grids\cite{bonic}\cite{condor}\cite{setiathome}. 
+The growth of computing power in workstations and personal computers attracts substantial interest in computing clusters and desktop grids\cite{bonic}\cite{condor}. 
 They enable sharing cpu power, storage capacity, and applications among distributed computers. 
 These computing devices span local, regional, or wide area networks.
-For the purpose of organizing and handling those widely distributed computing resources efficiently, distributed system platforms such as Condor\cite{condor}, Boinc\cite{bonic}, and SETI@Home\cite{setiathome} have become a popular environment.
+For the purpose of organizing and handling those widely distributed computing resources efficiently, distributed system platforms such as Condor\cite{condor} and Boinc\cite{bonic} have become a popular environment.
 After deploying such services, several management issues still remain. The services should be able to distribute computation jobs evenly among distributed nodes.\footnote{We use the terms, \textit{node}, \textit{peer}, \textit{resource} and \textit{machine} interchangeably.}
 The system should be scalable in case new nodes join. It also has to be fault tolerant in the presence of abnormal behavior of a node or churn. 
 Security issues should be addressed to prevent malicious nodes from ruining clusters.
@@ -189,7 +189,7 @@ The latency cost of bounded-broadcast is  $O(\log^2(N))$\cite{deetoo}, which is 
 
 \subsection{MapReduce}
 Map and reduce functions are used in the Lisp programming language and many other functional programming languages. 
-Based on the concept of map and reduce functional programming model, the Google proposed a software framework to parallelize large dataset computations efficiently\cite{google_mapreduce}.
+Based on the concept of map and reduce functional programming model, Google proposed a software framework to parallelize large dataset computations efficiently\cite{google_mapreduce}.
 Map function usually works on (Key/Value) pairs to create intermediate (Key/Value) results. 
 Reduce functions work on intermediate (Key/Value) results while aggregating intermediate values associated with the same intermediate keys.
 The MapReduce framework supports distributing map and reduce tasks among nodes in a cluster to enable parallel processing, dividing input files into multiple chunks. 
@@ -222,16 +222,15 @@ The MapReduce core module disseminates the task to nodes which reside under its 
 \epsfig{file=mr_struct.eps, width=3.4in}
 \caption{Map and Reduce data flow}
 \end{figure}
-Similar to the Google MapReduce, a user has to define own Map and Reduce functions associated with his needs. 
+Similar to Google MapReduce, a user has to define own Map and Reduce functions associated with his needs. 
 After a node processes the Map task, the node returns the result to the Reduce function of itself.
 The Reduce function aggregates its own Map result and child nodes' Reduce results. 
 After completing the Reduce function, the node returns the result to the parent node's reduce function.
 We visualize the dataflow between Map and Reduce functions in the Figure 2.
-For the resource discovering purpose, Map and Reduce functions are defined as follows:
-
-\textbf{Map function}: In a Map function, a resource requirement and a rank criteria are delivered as a Map argument .
-\begin{flushleft}Requirement=(Memory>2048) \&\& (KeyboardIdle>300) \&\& (SoftwareInstalled.Contains("Matlab"))\footnote{We modified the requirement syntax to increase readability.}\ \ \ \ \ \ \ \ \ \ (1)\end{flushleft}
-\begin{flushleft}Rank=(Memory)+(KeyboardIdle*10)\ \ \ \ \ (2)\end{flushleft}
+For the resource discovering purpose, Map and Reduce functions are defined as follows:\\*\\*
+\textbf{Map function}: In a Map function, a resource requirement and a rank criteria are delivered as a Map argument .\\*\\*
+\textit{Requirement}=(Memory>2048) \&\& (KeyboardIdle>300) \&\& (SoftwareInstalled.Contains("Matlab"))\footnote{We modified the requirement syntax to increase readability.}\ \ \ \ \ \ \ \ \ \ \ \ (1)\\*
+\textit{Rank}=(Memory)+(KeyboardIdle*10)\ \ \ \ \ \ \ \ \ \ \ \ \ (2)\\*\\*
 (1) describes the resource requirement. It means that the target resource's memory has to be bigger than 2GB and the keyboard idle time is more than 300 seconds.
 The target machine also has to be \textit{Matlab} installed.
 When a node receives a resource matching request, it first checks whether it satisfies the requirement or not. If it does, it calculates the rank value whose purpose is to order candidate nodes.
@@ -294,25 +293,22 @@ Using five modules described from section 2.A to 2.E, Figure 3 architecture is f
 \end{enumerate}
 
 \subsection{Differences Between Google MapReduce and MapReduce-Based Query System}
-In this section, we are going to highlight differences between Google MapReduce and our MapReduce-based query system.
-\begin{description}
-\item[Goal]The goal of Google MapReduce is sharing computing power in order to process large dataset\cite{google_mapreduce}. Due to large input and output dataset transfer, the system is appropriate in a LAN environment.
-Our MapReduce-based query system, on the other hand, targets for monitoring and querying nodes in a WAN environment.
-\item[Central Manager]Google MapReduce runs a central manager which is responsible for assigning map and reduce tasks and dealing with a  worker failure.
+In this section, we will highlight differences between Google MapReduce and our MapReduce-based query system.\\*
+\textbf{Goal}: The goal of Google MapReduce is sharing computing power in order to process large dataset\cite{google_mapreduce}. Due to large input and output dataset transfer, the system is appropriate in a LAN environment.
+Our MapReduce-based query system, on the other hand, targets for monitoring and querying nodes in a WAN environment.\\*
+\textbf{Central Manager}: Google MapReduce runs a central manager which is responsible for assigning map and reduce tasks and dealing with a  worker failure.
 Due to the central manager node's job assigning and periodical monitoring tasks, it can be a bottleneck or a hot-spot node. 
-On the contrary, our MapReduce-based query system has no central manager node. Instead, a self-organizing bounded-broadcast tree is responsible for committing map and reduce tasks.
-\item[Handling Lagging Nodes]Google MapReduce does not provide a method to handle lagging nodes, but Hadoop MapReduce does. In Hadoop, a lagging node is detected based on a progress score.
+On the contrary, our MapReduce-based query system has no central manager node. Instead, a self-organizing bounded-broadcast tree is responsible for committing map and reduce tasks.\\*
+\textbf{Handling Lagging Nodes}: Google MapReduce does not provide a method to handle lagging nodes, but Hadoop MapReduce does. In Hadoop, a lagging node is detected based on a progress score.
 If a node's progress score is less than a threshold value, which is decided based on the average Map and Reduce task execution time, the node is marked as a straggler. The straggler node's job is reassigned by a central manager node\cite{hadoop}.
 The Late scheduler\cite{late} selects lagging nodes that will finish the farthest into the future. They predict a job completion time based on \textit{Remaining Job Portion/Progress Rate}, which considers both
 how fast the node is processing the task and how much amounts of work remain. 
 In Hadoop and Late algorithm a central manager node is obligated to monitor Map and Reduce task execution nodes. 
 In MapReduce-based query system RPC timeout will distinguish lagging nodes. If a parent node detects a RPC timeout from one of its child nodes, the parent node would prune the retarding node from a bounded-broadcast tree.
-Handling child node's RPC timeout gracefully and getting partial results from a lagging node are our future works.
-\item[Network Bandwidth Usage]Based on each method's goal, Google MapReduce consumes much network bandwidths to transfer input and output data, and it needs fast data transmission for an efficient job processing. 
+Handling child node's RPC timeout gracefully and getting partial results from a lagging node are our future works.\\*
+\textbf{Network Bandwidth Usage}: Based on each method's goal, Google MapReduce consumes much network bandwidths to transfer input and output data, and it needs fast data transmission for an efficient job processing. 
 Oppositely, MapReduce-based query system consumes small amounts of network bandwidth, because a Map argument(i.e., query requirement) is usually less than several-hundreds bytes, and a Reduce result is aggregated at each node in a broadcast tree.
 The hierarchical information aggregation method, which applies to the Reduce result accumulation, provides scalability in a distributed information management system.\cite{astrobe}\cite{treedatamanage}
-\end{description} 
-
 \section{Evaluation}
 In this section, we evaluate MapReduce-based query system in a decentralized and heterogeneous environment using an analytical method and a simulation. 
 To address the feasibility of MapReduce-based query system in the real-world, we deployed the system on PlanetLab. 
@@ -339,43 +335,43 @@ Because Fig.4(a) mapped key is located between the begin and end address, a quer
 If multiple attributes need to be considered, one representative attribute is selected randomly, and the query range is determined based on the requirement of the randomly selected representative attribute.
 Other than a naive resource matching, SWORD provides an \textit{optimizer} module to select optimal resources among multiple candidate nodes. 
 \subsection{Performance Analysis}
-In this section, we are going to compare the performance of the MapReduce based query system and SWORD analytically. 
+In this section, we are going to compare the performance of MapReduce-based query system and SWORD analytically. 
 Our analysis focuses on the Number of Visited to Complete a Query-$N_Q$, Query Latency-$L_Q$, Query Bandwidth-$B_Q$, Resource Information Update Bandwidth-$B_U$.
-We express the total number of nodes in a pool as $N$, the number of published attributes as $A_N$, the size of each attribute as $A_S$, a resource information DHT update period as $U_P$, 
-and the number of attribute and value indexing bits shown in the Figure.4 as $I_A$, and $I_V$, respectively. In this analysis, we assume that all nodes in a pool are evenly distributed through the all address region.
+We express the total number of nodes in a pool as $N$, the number of published attributes as $A_N$, the size of each attribute as $A_S$, 
+and the number of attribute and value indexing bits shown in the Figure.4 as $I_A$, and $I_V$, respectively. In this analysis, we assume that all nodes in a pool are evenly distributed through all address region.
 
 \subsubsection{Number of Visited Nodes to Complete a Query}
-The MapReduce based query system visits all nodes in the pool, so the number of visited node to complete a query is $N$.
-SWORD can optimize this metric by manipulating the number of bits for an attribute and a value indexing bits in Figure 4. As the number of bits for an attribute and a value indexing increases by 1 bit, 
+MapReduce-based query system visits all nodes in a pool to complete a query, which is $N$.
+SWORD can optimize this by manipulating the number of bits for an attribute and a value indexing bits in Figure 4. As the number of bits for an attribute and a value indexing increases by 1 bit, 
 the query region decreases in half. Thus, the number of visited nodes to complete a query is\begin{math}\frac{N}{2^{I_A+i_v}}\end{math}, where \begin{math}0<i_v<I_V\end{math}.
 \begin{math}i_v\end{math} means the number of same bit value between query begin and end value. For example, if a query wants to find machines whose attribute value lies between 0x0000 and 0x00FF, \begin{math}i_v\end{math} is 8. 
 \subsubsection{Latency For a Query}
-The latency of a query depends on the number of visited nodes to complete a query. Because MapReduce based query system propagates queries using bounded-broadcast, the latency closely related to
-the tree-depth of the bounded-broadcast. According to the DeeToo\cite{deetoo}, tree depth of a bounded-broadcast is \begin{math}O(log^2(N))\end{math}. Assuming SWORD query is propagated using bounded-broadcast,
+The latency of a query depends on the number of visited nodes to complete a query. Because MapReduce based query system propagates queries using bounded-broadcast, the latency is closely related to
+the tree-depth of bounded-broadcast. According to DeeToo\cite{deetoo}, tree depth of bounded-broadcast is \begin{math}O(log^2(N))\end{math}. Assuming SWORD query is propagated using bounded-broadcast,
 the query latency will be  \begin{math}O(log^2(\frac{N}{2^{I_A+i_v}}))\end{math}. Otherwise, the latency of MapReduce based query system is  \begin{math}O(log^2(N))\end{math}.
 \subsubsection{Bandwidth Usage For a Query}
 Let's assume that a query message size is $S_Q$, and a response message size is $S_R$.
-In the bounded-broadcast, a message is routed only to the 1-hop neighbors, so the query and the response message size between a parent and a child node is $S_Q+S_R$.
+Using bounded-broadcast, a message is routed only to 1-hop neighbors, so a query and response message size between a parent and a child node is $S_Q+S_R$.
 Thus, the bandwidth usage to complete a query is \begin{math}(N_Q-1)*(S_Q+S_R)\end{math}.
-In case of the MapReduce based query system, Reduce results from child nodes are aggregated whenever a parent node processes a Reduce function, so $S_R$ of MapReduce based query system does not increase
-as the Reduce results propagate through the bounded-broadcast tree.
+In case of MapReduce-based query system, Reduce results from child nodes are aggregated whenever a parent node processes a Reduce function, so $S_R$ of MapReduce-based query system does not increase linearly
+as Reduce results propagate through the bounded-broadcast tree.
 
-As we can see from the above three metrics, the query performance is closely related to the \textit{Number of Visited Node to Complete a Query}. By using the bounded-broadcast, we can complete a query
-at the cost of \begin{math}O(log^2(N_Q))\end{math}, which is smaller than flooding based broadcast cost(\begin{math}O(N_Q)\end{math}).
+As we can see from above three metrics, the query performance is closely related to the \textit{Number of Visited Node to Complete a Query}. By using bounded-broadcast, we can complete a query
+at the cost of \begin{math}O(log^2(N_Q))\end{math}, which is smaller than a flooding based broadcast cost(\begin{math}O(N_Q)\end{math}).
 \subsubsection{Cost for Resource Information Update}
-The SWORD checks a query matching at nodes which lie inside the query range. To perform the query matching at the distant nodes, resource information has to be periodically updated at the proper remote nodes.
-Otherwise, MapReduce based query system does not need any resource information update, because query matching is processed using local resource information at the Map function.
-In this section, we are going to analyze the SWORD's bandwidth cost to update resource information to remote nodes.
-Every node has to update its resource information, whose size is $A_N*A_S$(neglecting serialization overload), $A_N$ times, because any nodes which are mapped to the hashed key has to provide query matching service. 
-Because of the soft-state properties of the DHT, each entry has to be updated at least every $U_P$ seconds. All nodes($N$) in the pool will perform this update.
+SWORD checks query matchings at nodes inside the query region based on periodically updated remote node's resource information.
+Otherwise, MapReduce-based query system performs matchmaking based on local resource information.
+In this section, we are going to analyze SWORD's bandwidth costs to update resource information to remote nodes.
+Every node has to update its resource information, whose size is $A_N*A_S$(neglecting serialization overload), $A_N$ times, because any nodes mapped to the hashed key have to provide query matching service. 
+All nodes($N$) in the pool will perform updates periodically.
 In addition, each DHT entry has to be routed to a proper hashed key node, which takes $O(log(N))$ hops\cite{chord}\cite{pastry} or \begin{math}O(\frac{1}{k}log^2(N))\end{math},where $k$ is number of short-cut connection\cite{brunet}.
-Accordingly, the bandwidth consumption for a resource information update per one update time period is:
+Accordingly, bandwidth for a resource information update per one update period is:
 \begin{displaymath}N*A_N*(A_N*A_S)*(\textit{Number of Hops})\end{displaymath}
-It shows that the bandwidth consumption is $O(A_N^2)$, and O(N), which is not scalable in case of increasing number of resource information attributes.
+It shows that the bandwidth consumption is $O(A_N^2)$, and $O(N*log(N))$, which is not scalable in case of increasing number of resource attributes.
 \subsubsection{Query Result Correctness}
-Each resource information saved in the DHT entry is not usually up-to-date. This may not hurt the SWORD performance if the query is based on static resource information, such as operating system. 
+A resource information in a DHT entry is not usually up-to-date. This may not hurt SWORD performance if a query requirement is static information, such as operating system. 
 When it comes to dynamic information, such as current cpu load or free memory size, the stale information is highly likely to be useless. 
-Because a DHT entry age is dependent on the DHT entry update period, the SWORD can make the period shorter to keep the resource information fresher.
+Because a DHT entry age is dependent on the DHT entry update period, SWORD can make a update period shorter to keep resource information fresher.
 However, it will result in more frequent DHT entry update and more bandwidth consumptions.
 \subsection{Simulation Results}
 \begin{figure}[t]
@@ -384,27 +380,27 @@ However, it will result in more frequent DHT entry update and more bandwidth con
 \caption{MapReduce based query system and SWORD simulation result (a)Query completion time. Query time ratio = (Query complete time/Number of nodes)*1.6. 
 (b)SWORD resource information update size. Ratio=(BW consumption)/(BW consumption when the number of attribute is 3)}
 \end{figure}
-To allow complete analysis and compare the performance of MapReduce based query system and SWORD, we implemented an event-driven single-threaded simulator, which uses Brunet\cite{brunet} routing, DHT, and node management.
+To prove correctness of analysis and compare the performance of MapReduce-based query system and SWORD, we implemented an event-driven single-threaded simulator, which uses Brunet\cite{brunet} routing, DHT, and node management.
 This simulator provides us a controlled experiment environment, and also allows us to check the correctness of our system implementation. We used MIT King data set\cite{king} to set network latency between nodes.
-Using Archer\cite{archer}, we could run the simulation on a decentralized computing cluster efficiently. 
+Using Archer\cite{archer}, we could run simulations on a decentralized computing cluster efficiently. 
 On the simulation, we ran 1-simulated hour after the P2P pool is formed to make the pool stable. And then, target operation(i.e. resource query or DHT resource information update) is initiated at each node for 2-simulated hours.
-For the MapReduce based query system, each node initiates a query every 5 minutes while setting the query range as the whole network. 
-In case of SWORD, we allocated 4 bits for attribute indexing, and the value field is filled with two randomly generated integer or double value to specify a desired region. 
-We set the Time To Live(TTL) of SWORD's DHT entry as 30 minutes, and the entry update is performed every 15 minutes.
-After running 10 simulations with different parameters, we calculated the average value.
+For MapReduce-based query system, each node initiates a query every 5 minutes while setting a query range as the whole network. 
+In case of SWORD, we allocated 4 bits for attribute indexing, and a value field is filled with two randomly generated integer or double value to specify a desired region. 
+We set a Time To Live(TTL) of SWORD's DHT entry as 30 minutes, and the entry update is performed every 15 minutes.
+After running 10 simulations with different parameters, we calculated an average value.
 \subsubsection{Query Complete Time}
-Figure 5.(a) shows query completion times. As we can see from the figure, the query time grows as the number of nodes increases. To highlight a relationship between a query complete time and a number of nodes,
-we added the query time ratio value. The ratio is calculated as \begin{math}\frac{Query\ Complete\ Time}{Number\ of\ Nodes}\end{math} and multiplied by a constant value to make the value fit for the graph.
+Figure 5.(a) shows query completion times. As we can see from the figure, the query time grows as the number of nodes increases. To highlight a relationship between a query complete time and a number of total nodes in the pool,
+we added a query time ratio. The ratio is calculated as \begin{math}\frac{Query\ Complete\ Time}{Number\ of\ Nodes}\end{math} and multiplied by a constant value to make the value fit for the graph.
 The ratio value decreases as the number of nodes increases, so we can conclude from this pattern that the order of our query system latency is less than $O(N)$, but bigger than $O(log(N))$.
-Though SWORD shows less query latency than MapReduce based query system, the actual effect of SWORD's smaller query region is not so remarkable. 
-When we set the attribute indexing size to 4 bits, the SWORD query region is about 0.3\% of the entire network. 
-However, the query latency decreased to only about 30\% of an entire network query latency, while the query region is decreased to 0.3\%.
-It may show different latency values for the other P2P network systems, but we can conclude that the cost for querying the entire network would be small if we design the bounded-broadcast system while considering
+Though SWORD shows less query latency than MapReduce based query system, the effect of SWORD's smaller query region is not so remarkable. 
+When we set the attribute indexing size to 4 bits, SWORD query region is about 0.3\% of the entire network. 
+However, the query latency decreased only about 30\% of an entire network query latency, while the query region is decreased to 0.3\%.
+It may show different latency values for some other P2P systems, but we can conclude that the cost for querying the entire network would be small if we design a broadcast method while considering
 each P2P network's characteristics carefully, which is a part of our future work.
 \subsubsection{Query Bandwidth Usage}
-Table. 1 shows the bandwidth consumption to complete a query. The \textit{Ratio} value is calculated as \begin{math}\frac{SWORD Bandwidth}{MapReduce bandwidth}\end{math}. The ratio value decreases as the number of nodes
-increases, but it is still bigger than 0.3\%, which is the fraction of the SWORD query region to the entire network. One of the reasons for this is multiple hops to route a message to a node which resides in the query region.
-A probability of finding a node in a SWORD query region decreases when the number of nodes in the pool decreases, so it will take more hops to route a message to a node in the desired region. 
+Table. 1 shows a bandwidth consumption to complete a query. The \textit{Ratio} is calculated as \begin{math}\frac{SWORD Bandwidth}{MapReduce bandwidth}\end{math}. The ratio value decreases as the number of nodes
+increases, but it is still bigger than 0.3\%, which is the fraction of the SWORD query region to the entire network. One of reasons for this is multiple hops to route a message to a node inside a query region.
+A probability of finding a node in SWORD query region decreases when the number of nodes in the pool decreases, so it will take more hops to route a message to a node in the desired region. 
 In our simulation, the number of nodes in a query region is usually 0 when the number of nodes in the entire network is small. 
 In case there is no node in the query region, SWORD should provide additional methods to query nodes which are located near the query region.
 \begin{table}
@@ -423,19 +419,19 @@ In case there is no node in the query region, SWORD should provide additional me
 \end{center}
 \end{table}
 \subsubsection{Resource Information Update Bandwidth}
-Figure 5(b) shows the resource information update bandwidth consumption when the number of published attributes is 3, 6, 15, 30, 60, and 120. 
+Figure 5(b) shows a resource information update bandwidth consumption when the number of published attributes is 3, 6, 15, 30, 60, and 120. 
 To show the effect of increased number of attributes, we normalized each bandwidth value to that of 3 attributes.
 Thus, $n$ attribute value's ratio is \begin{math}\frac{n-attribute's\ bandwidth}{3-attribute's\ bandwidth}\end{math}. 
 When the number of attribute is small, the increasing rate is not $O((Number\ of\ Attribute)^2)$ due to the initial resource information serialization overhead.
-As the serialization overhead effect becomes negligible, the increasing rate follows $O((Number\ of\ Attribute)^2)$
+As the serialization overhead effect becomes negligible, the rate follows $O((Number\ of\ Attribute)^2)$
 
 Based on the analysis and simulation results, we conclude that the novel bounded-broadcast allows propagating query to the entire P2P network eligible within a reasonable amount of time.
-Considering that propagating a query is much less expensive than publishing large resource information, it is more desirable to propagate queries to the entire network other than publishing resource information periodically. 
-In addition, propagating queries to the entire network allows each node to process matchmaking using its own up-to-date local resource information, 
-which claims advantages over DHT based query system where the saved resource information might be stale.
+Considering that propagating a query is much less expensive than publishing large resource information, it is more desirable to propagate queries to the entire network than publishing resource information periodically. 
+In addition, propagating queries to the entire network allows each node to process matchmaking using own fresh local resource information, 
+which claims advantages over DHT based query system where saved resource information might be stale.
 
 \subsection{PlanetLab Evaluation}
-Figure 6 shows the MapReduce based query system's latency in completing queries on PlanetLab. The test was performed on 31. January. 2010, and about 600 nodes were included in the experiment pool.
+Figure 6 shows MapReduce-based query system's latency in completing queries on PlanetLab. The test was performed on 31. January. 2010, and about 600 nodes were included in the experiment pool.
 For the experiment, 3 kinds of queries were performed 100 times each. 
 
 \textbf{Query 1}: Requirement=(Memory>1024) \&\& (KeyboardIdle > 300) \&\& (OpSys=="LINUX"). Rank = Memory + KeyboardIdle*10. Return 5 nodes whose rank is the highest.
@@ -445,7 +441,7 @@ For the experiment, 3 kinds of queries were performed 100 times each.
 \textbf{Query 3}: Requirement=(PhysicalLocation.Longitude>0) \&\& (PhysicalLocation.Latitude>0). Rank=CpuBusyTime. Return 5 nodes whose rank value is the lowest.
 
 As we can see from the figure, 80\% of queries completed in 15 seconds regardless of the query type. However, some queries took very long until they completed, 
-because our query system waited for the reply from lagging response nodes until the underlying P2P system issues a RPC timeout.
+because our query system waited for a reply from lagging response nodes until the underlying P2P system issues a RPC timeout.
 Supporting a method to handle lagging nodes other than relying on a RPC timeout of P2P network is our future project.
 \begin{figure}
 \centering
@@ -453,50 +449,44 @@ Supporting a method to handle lagging nodes other than relying on a RPC timeout 
 \caption{Cumulative distribution of query latency on the PlanetLab with about 600 nodes}
 \end{figure}
 \section{Related Work}
-We have already discussed a range of related works which are closely tied to the MapReduce based query system in the previous sections. 
-In this section, we will discuss some related works by dividing into three categories:
-Range Query System On a P2P Network, Cluster Monitoring System, and Information Aggregation Algorithm.
+We have already discussed a range of related works which are closely tied to MapReduce-based query system in previous sections. 
+In this section, we will discuss some related works on P2P network range query systems and cluster monitoring systems.
 
-\textbf{Range Query System on a P2P network}: Kim et. al\cite{can_query}, Squid\cite{squid}, and Artur et. al\cite{query_for_grid} discuss resource locating methods using a multiple dimensional P2P network. 
-Kim et. al\cite{can_query} maps each resource attribute to one dimension in the CAN network. For matchmaking, the requirement conforming zone is created based on the criteria described in the query, 
+\textbf{Range Query System on a P2P network}: Kim et. al\cite{can_query} and Artur et. al\cite{query_for_grid} discuss resource locating methods using a multiple dimensional P2P network. 
+Kim et. al\cite{can_query} maps each resource attribute to one dimension in CAN\cite{can}. For matchmaking, a requirement conforming zone is created based on the criteria described in a query, 
 and nodes inside the requirement satisfying region are candidate ones for the requirement.
-Squid\cite{squid}, and Artur et. al\cite{query_for_grid} converts multiple dimension spaces into one dimensional ring space. Using the correlation between the multiple dimension and an attribute value, 
+Artur et. al\cite{query_for_grid} converts multiple dimension spaces into one dimensional ring space. Using the correlation between multiple dimensions and an attribute value, 
 the resource matchmaking is performed. 
-Above methods need a local node's information update to neighbor nodes, because they use the information in order to select the optimal requirement matching nodes.  
-In addition, adding new resource attributes results in additional dimensions which bring the increased number of neighbor nodes and more management status.
-
+Above methods need a local node's information update to neighbor nodes, because they use the information in order to select optimal requirement matching nodes.  
+In addition, adding new resource attributes results in additional dimensions which bring an increased number of neighbor nodes and more management issues.\\*
 Similar to our work, Kim et. al\cite{chord_matching} and Armada\cite{armada} use a tree-structure to check requirement matching. 
-Kim et. al\cite{chord_matching} uses the Chord as an underlying P2P network, and the resource information propagation tree is
-constructed based on the node id. Each node needs periodic resource information update to the parent node, which shares same drawbacks with the SWORD.
-Armada\cite{armada} assigns an Object ID based on the attribute value, and a partition tree is constructed based on the proximity of the object ID. 
+Kim et. al\cite{chord_matching} uses Chord\cite{chord} as an underlying P2P network, and a resource information propagation tree is
+constructed based on the node id. Each node needs periodic resource information update to the parent node, which shares same drawbacks with SWORD.
+Armada\cite{armada} assigns an Object ID based on an attribute value, and a partition tree is constructed based on the proximity of the object ID. 
 To locate nodes, only the desired region of Object ID needs to be scanned. However, this query system does not support arbitrary matching, such as regular expression match or partial string match.
-Mercury\cite{mercury} and SWORD\cite{sword} use a DHT system for matchmaking. 
-Because the DHT entry should be updated periodically, these methods incur much bandwidth consumption for resource information update.
 
 \textbf{Cluster Monitoring System}: Blue Eyes\cite{blueeyes}, Ganglia\cite{ganglia}, and Supermon\cite{supermon} are hierarchically structured cluster monitoring systems. 
-The Blue Eyes\cite{blueeyes} provides a reliable monitoring system by running multiple management servers, which are constructed as a self-organizing hierarchical tree using a management server list. 
-For the high system availability, monitoring data is replicated into multiple backup servers, and this replication requires much bandwidth consumption and may cause data consistency problems.
-The Ganglia\cite{ganglia} uses gmond and gmetad to aggregate local resource information. 
-The Ganglia gmond gathers local cluster node's information using multicast, and the gmetad accumulates inter-cluster information by collecting the gmond information.
-It also consumes much network bandwidth for local node information update to the gmond, ann the system is not reliable in case of gmetad failure.
-In the Supermon\cite{supermon}, the mon process is responsible for local resource information archiving and filtering, 
+Blue Eyes\cite{blueeyes} provides a reliable monitoring system by running multiple management servers, which are constructed as a self-organizing hierarchical tree using a management server list. 
+For high system availability, monitoring data is replicated into multiple backup servers, and this replication requires much bandwidth consumption and may cause data consistency problems.
+Ganglia\cite{ganglia} uses gmond and gmetad to aggregate local resource information. 
+Ganglia gmond gathers local cluster node's information using multicast, and the gmetad accumulates inter-cluster information by collecting the gmond information.
+It also consumes much network bandwidth for local node information update to the gmond, and the system is not reliable in case of gmetad failure.
+In Supermon\cite{supermon}, the mon process is responsible for local resource information archiving and filtering, 
 and the supermon process aggregates multiple mon processes' data and presents the aggregated data as a single data sample. 
 The Supermon's hierarchical structure is not self-configurable, because the relation between mon server and supermon server has to be registered manually by a system administrator.
 Intemon\cite{intemon} is a server-client model monitoring system. It uses the SNMP to collect resource information and supports automatic data analysis based on the historical resource correlation pattern.
 Due to its static server-client relationship, it is not scalable in case multiple new clients join the monitoring system. The system also has to consume much bandwidth for periodical information update.
-
-\textbf{Information Aggregation Algorithm}: 
-Space Limitation. 
 \section{Conclusions and Future Work}
-This paper presents and evaluates the MapReduce based query system, which uses a self-organizing broadcast tree to spread queries to the entire network.
-To our best knowledge, this system is the first real-world MapReduce application deployed on top of a P2P network.
-We described how our system adapted the concept of Map and Reduce functional programming model and the differences between the Google MapReduce system and our MapReduce based query system.
+This paper presents and evaluates the MapReduce-based query system, which uses a self-organizing broadcast tree to spread queries to the entire network.
+To our best knowledge, this system is the first demonstrated implementation of MapReduce application deployed on top of a P2P network.
+We described how our system adapted the concept of Map and Reduce functional programming model and differences between Google MapReduce system and our MapReduce based query system.
 With the aid of self-organizing bounded-broadcast method, we could distribute resource locating queries to the entire network neatly. 
 The use of condor\_startd daemon to collect local resource information and ClassAd to process matchmaking allow us to perform various matching method(regular expression, partial string match) with plentiful resource information.
-The analysis and simulation result show that dispersing query to the entire network with the novel bounded-broadcast method makes the queries to complete in a reasonable time, 
+Our system supports adding new or user-defined resource attributes easily after deploying a pool without affecting performance.
+The analysis and simulation results show that dispersing queries to the entire network with the bounded-broadcast method makes queries to complete in a reasonable time, 
 and they also show scability of our system for the increased number of nodes and resource attributes.
 PlanetLab deployment of our system and its performance metric show that MapReduce based query system is a feasible and attractable solution for a wide area resource monitoring system.
-Next steps for the MapReduce based query system are showing the practicability of a bounded-broadcast method on top of other P2P systems, such as Chord, Pastry, Can, and etc.
+Next steps for MapReduce-based query system are showing the practicability of a bounded-broadcast method on top of other P2P systems, such as Chord, Pastry, Can, and etc.
 We will also work on deploying our MapReduce based query system in a real cluster for monitoring and querying purpose.
 \bibliographystyle{abbrv}
 \bibliography{hpdc_mr_ws}
