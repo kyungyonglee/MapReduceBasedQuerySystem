@@ -88,9 +88,9 @@ Tae Woong Choi\\
        \email{twchoi@ufl.edu}
 \alignauthor
 Arijit Ganguly\\
-       \affaddr{Amazon Web Service}\\
-       \affaddr{Amazon}\\
-       \email{aganguly@gmail.com}
+       \affaddr{Amazon Web Services}\\
+       \affaddr{Amazon.com}\\
+       \email{arijit@amazon.com}
 \and
 \alignauthor
 P. Oscar Boykin\\
@@ -118,13 +118,14 @@ Our MapReduce-based query system is currently deployed on PlanetLab while built 
 \section{Introduction}
 Desktop grids\cite{bonic}\cite{condor} using commodity computers connected over a local or wide-area network have been proven to be excellent platforms 
 for high-throughput computing while providing sharing CPU power, storage  capacity, and applications.
-These systems should be scalable in case of installing new machines. It also has to be fault tolerant and secure in the presence of abnormal or malicious behavior of a user or churn. 
+These systems should be scalable in case of installing new machines, fault-tolerant, and secure in the presence of abnormal or malicious behavior of a user or churn. 
 These systems must be able to distribute jobs evenly among nodes\footnote{We use the terms, \textit{node}, \textit{peer}, \textit{resource} and \textit{machine} interchangeably.} to achieve maximum utilization and alleviate hot stops. 
 Middleware solutions such as Condor\cite{condor} and Boinc\cite{bonic} for managing distributed resources often rely on a centralized master server that has global view of available resources to make efficient scheduling decisions. 
 Worker nodes publish their resource information to the central master node that matches a job requirement against available resource information to determine the most suitable node that can execute a job. 
 The central master server approach often imposes significant administrative, uptime, and scalability issues, and the failure of the master can render all its managed resources unusable.  
 
-Distributed Hash Table (DHT)\cite{chord}\cite{pastry} offers a decentralized information system that scales to a large number of nodes, self-configuring in presence of node failures, and efficient object storage and retrieval based on a key. 
+Distributed Hash Table (DHT)\cite{chord}\cite{pastry} offers a decentralized information system that scales to a large number of nodes. 
+It provides self-configuration in the presence of node failures, efficient object storage, and retrieval based on a key. 
 Resource discovery often involves querying resources using attributes (CPU speed, disk space, RAM, and etc) by their desired values, often involving range queries on attributes. 
 Thus, DHTs are often inadequate for these requirements. 
 SWORD\cite{sword} and Mercury\cite{mercury} enhance the DHT to range and multi-attribute queries, but these systems cannot capture complex queries involving unstructured data, such as partial string matching or regular expression matching. 
@@ -170,9 +171,9 @@ The message recipient node sends the message to its neighbors inside its broadca
 \label{figure:bb}
 }
 \end{figure}
-The key to put a resource discovery message is bounded-broadcast\cite{deetoo} that disseminates a message over a sub-region of a P2P network by leveraging a structured P2P system to create a self-organizing tree. 
+The key method MapReduce-based resource discovery system primitive used is bounded-broadcast\cite{deetoo}. It disseminates a message over a sub-region of a P2P network by leveraging a structured P2P system to self-organize a multicast tree. 
 Bounded-broadcast is currently implemented on top of Brunet\cite{brunet}, which implements a 1-d Kleinberg's small-world network\cite{small_world_network}.
-Each node maintains two types of connection: (1) constant number of near connections to its left and right neighbors on the P2P ring, and (2) about $0.5*log(N)$, where $N$ is the number of nodes, far connections to random nodes in the P2P ring; such that the number of hops between nodes is $O(log^2(n))$.
+Each node maintains two types of connections: (1) constant number of near connections to its left and right neighbors on the P2P ring, and (2) about $0.5*log(N)$, where $N$ is the number of nodes, far connections to random nodes in the P2P ring; such that the number of hops between nodes is $O(log^2(n))$.
 
 A node is allocated a sub-region of the P2P ring over which to disseminate a message. The node then redistributes the message to its neighbor nodes inside its allocated sub-region while allocating new sub-regions to the neighbor nodes. This process continues until the message is disseminated over the entire sub-region. 
 For example, to broadcast a message over the sub-region[A,L] in Figure \ref{figure:bb}, a message initiator issues a broadcast command to node A with sub-region information, [A,L]. 
@@ -195,7 +196,7 @@ Reduce functions work on intermediate (Key/Value) results while aggregating inte
 The framework distributes map and reduce tasks among nodes in a cluster to enable parallel processing, while the users only have to specify the appropriate map and reduce functions associated with their computation without having to worry about details of distributed parallel job execution.  
 
 In our MapReduce-based query system, we define the Map function as checking requirement matching and calculating a rank value. The Reduce function is defined as 
-aggregating and ordering the Map result based on the matching result and rank value. These are presented in detail next section.
+aggregating and ordering the Map result based on the matching result and rank value. These are presented in detail next.
 
 \subsection{MapReduce Query System Architecture}
 MapReduce-based query system is divided into 5 modules. They are P2P network module, MapReduce core, Map and Reduce function, local resource information monitor, and matchmaking module.
@@ -219,8 +220,8 @@ After completing the Reduce function, the node returns the result to the parent 
 For the resource discovering purpose, Map and Reduce functions are defined as follows:\\*\\*
 \textbf{Map function}: In a Map function, a resource requirement and a rank criteria are delivered as a Map argument .
 The following example illustrates a Map argument based on Conodr ClassAd.\footnote{We modified the ClassAd syntax in this example to increase readability.}\\*\\*
-\textit{Requirement}=(Memory>2048) \&\& (KeyboardIdle>300) \&\& (SoftwareInstalled.Contains("Matlab"))\ \ \ \ \ \ \ \ \ \ \ \ (1)\\*
-\textit{Rank}=(Memory)+(KeyboardIdle*10)\ \ \ \ \ \ \ \ \ \ \ \ \ (2)\\*\\*
+\textit{Requirement}=(Memory>2048) \&\& (KeyboardIdle>300) \&\& (SoftwareInstalled.Contains("Matlab"))\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (1)\\*\\*
+\textit{Rank}=(Memory)+(KeyboardIdle*10) \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (2)\\*\\*
 State (1) describes the resource requirement. It means that the target resource's memory has to be bigger than 2GB and the keyboard idle time is more than 300 seconds.
 The target machine also has to contain string \textit{Matlab} in a SoftwareInstalled attribute.
 When a node receives a resource matching request, it first checks whether it satisfies the requirement or not. If it does, it calculates the rank value whose purpose is to order candidate nodes.
@@ -305,28 +306,30 @@ The mapping is performed once per an attribute for every information update even
 \epsfig{file=sword.eps, width=3in}
 \caption{\label{fig:sword}SWORD DHT key mapping for free disk space: (a)key mapping of 121GB free disk space (b)Query begin address for 64GB free disk space (c)Query end address for 128GB free disk space}
 \end{figure}
-Figure \ref{fig:sword} shows SWORD DHT key mappings. In this example, $n$ is 16 bits, $m$ is 4its, and $k$ is 8 bits. Let's assume that value $0010$ indicates the free disk space attribute.
+Figure \ref{fig:sword} shows SWORD DHT key mappings. In this example, $n$ is 16 bits, $m$ is 4bits, and $k$ is 8 bits. Let's assume that value $0010$ indicates the free disk space attribute.
 A node whose free disk space is 121GB sets its free disk attribute key as in Figure \ref{fig:sword}(a).
-To find nodes whose free disk space is between 64GB and 128GB, SWORD first decides the query begin address by setting attribute bits as $0100$, value bits as 64GB, and random bits as all 0x0s, shown in Figure \ref{fig:sword}(b).
-For the query end address, it sets attribute index bits as $0100$, value bits as 128GB, and random bits as all 0xFs as in Figure \ref{fig:sword}(c).
-Nodes inside between the begin address and end address will satisfy the query. 
+To find nodes whose free disk space is between 64GB and 128GB, SWORD first decides the query begin address by setting attribute bits as $0010$, value bits as 64GB, and random bits as all 0x0s, shown in Figure \ref{fig:sword}(b).
+For the query end address, it sets attribute index bits as $0010$, value bits as 128GB, and random bits as all 0xFs as in Figure \ref{fig:sword}(c).
+Nodes between the begin address and end address will satisfy the query. 
 If multiple attributes need to be considered, one representative attribute is selected randomly, and the query range is determined based on the requirement of the randomly selected representative attribute.
-Other than a naive resource matching, SWORD provides an \textit{optimizer} module to select optimal resources among multiple candidate nodes. 
+In addition to a resource matching, SWORD provides an \textit{optimizer} module to select optimal resources among multiple candidate nodes. 
 \subsection{Performance Analysis}
-In this section, we are going to compare the performance of MapReduce-based query system and SWORD analytically. 
-Our analysis focuses on the (1) Number of Visited Nodes to Complete a Query-$N_Q$, (2) Query Latency-$L_Q$, (3) Query Bandwidth-$B_Q$, and (4) Resource Information Update Bandwidth-$B_U$.
+In this section, we compare the performance of MapReduce-based query system and SWORD analytically. 
+Our analysis focuses on:  (1)$N_Q$, Number of Visited Nodes to Complete a Query, (2)$L_Q$, Query Latency, (3)$B_Q$, Query Bandwidth, and (4)$B_U$, Resource Information Update Bandwidth.
 We express the total number of nodes in a pool as $N$, the number of published attributes as $A_N$, the size of each attribute as $A_S$, 
-and the number of attribute and value indexing bits as $I_A$, and $I_V$, respectively. In this analysis, we assume that all nodes are evenly distributed.
+and the number of attribute and value indexing bits as $I_A$, and $I_V$, respectively. In this analysis, we assume that node addresses are uniformly distributed.
 
 \subsubsection{Number of Visited Nodes to Complete a Query}
-MapReduce-based query system visits all nodes in a pool to complete a query, which means that the number of visited node is $N$.
-SWORD can optimize this value by manipulating the number of bits for an attribute and a value indexing bits shown in Figure \ref{fig:sword}. As those bits increase by 1 bit, 
-the query region decreases in half. Thus, the number of visited nodes to complete a query is\begin{math}\frac{N}{2^{I_A+i_v}}\end{math}, where \begin{math}0<i_v<I_V\end{math}.
-\begin{math}i_v\end{math} means the number of same bit value between query begin and end value. For example, if a query wants to find machines whose attribute value lies between 0x0000 and 0x00FF, \begin{math}i_v\end{math} is 8. 
+MapReduce-based query system visits all nodes in a range to complete a query. Thus, if the entire pool is queried, $N_Q$ is $N$. 
+The system can manipulate $N_Q$ by setting a query range as sub-region of the entire network by sacrificing query completeness.\footnote{Query completeness: A query must find query satisfying nodes if they exist in a pool.}
+For SWORD, $N_Q$ depends on $I_A$ and $I_V$ shown in Figure \ref{fig:sword}. As those bits increase by 1 bit, 
+the query region decreases in half. Thus, $N_Q$ is \begin{math}N/2^{(I_A+i_v)}\end{math}, where \begin{math}0<i_v<I_V\end{math}.
+\begin{math}i_v\end{math} means the number of continuously identical bit from most significant bit (MSB) between query begin and end value. 
+For example, if a query attribute value lies between 0x00FF and 0x0FFF, \begin{math}i_v\end{math} is 4. 
 \subsubsection{Query Latency}
 The latency of a query depends on both the number of visited nodes to complete a query and query propagating method(i.e., bounded-broadcast). 
 According to \cite{deetoo}, latency of bounded-broadcast query dissemination follows \begin{math}O(log^2(N))\end{math}. Assuming SWORD propagates query using bounded-broadcast,
-the query latency will be  \begin{math}O(log^2(\frac{N}{2^{I_A+i_v}}))\end{math}. Otherwise, the latency of MapReduce-based query is  \begin{math}O(log^2(N))\end{math}.
+the query latency will be \begin{math}O(log^2(N/2^{(I_A+i_v)}))\end{math}. Otherwise, the latency of MapReduce-based query is \begin{math}O(log^2(N))\end{math}.
 \subsubsection{Bandwidth Usage For a Query}
 Let's assume that a query message size is $S_Q$, and a response message size is $S_R$.
 Using bounded-broadcast, a message is routed only to 1-hop neighbors, so bandwidth consumption between a parent and a child node is $S_Q+S_R$.
@@ -452,8 +455,8 @@ Our system also supports adding new or user-defined resource attributes easily a
 The analysis and simulation results show that dispersing queries to the entire network with the bounded-broadcast method makes queries to finish in a reasonable time, 
 and they also show scability of our system for the increased number of nodes and resource attributes.
 PlanetLab deployment of our system and its performance metric show that MapReduce-based query system is a feasible and attractable solution for a wide area resource monitoring system.
-Next steps for MapReduce-based query system are showing the practicality of a bounded-broadcast method on top of other P2P systems, such as Chord, Pastry, Can, and etc.
-We will also work on deploying our MapReduce-based query system in a real system for monitoring and querying purpose.
+Next step for MapReduce-based query system is to decrease the number of visited node to complete a query without sacrificing query completeness.
+We will also work on deploying our MapReduce-based query system in a real system for monitoring and querying purposes.
 
 
 \bibliographystyle{abbrv}
