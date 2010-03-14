@@ -93,6 +93,11 @@ Arijit Ganguly\\
        \email{arijit@amazon.com}
 \and
 \alignauthor
+David I. Wolinsky\\
+       \affaddr{ACIS Lab. Dept. of ECE}\\
+       \affaddr{University of Florida}\\
+       \email{davidiw@ufl.edu} 
+\alignauthor
 P. Oscar Boykin\\
        \affaddr{ACIS Lab. Dept. of ECE}\\
        \affaddr{University of Florida}\\
@@ -291,13 +296,12 @@ Oppositely, MapReduce-based query system consumes small amounts of network bandw
 The hierarchical information aggregation method, which applies to the Reduce result accumulation, provides scalability in a distributed information management system~\cite{astrobe}~\cite{treedatamanage}.
 \section{Evaluation}
 In this section, we evaluate MapReduce-based query system in a decentralized and heterogeneous environment using an analytical method and a simulation. 
+To compare MapReduce-based query system against a DHT-based one, we evaluate SWORD~\cite{sword} analytically and via a simulation.
 To address the feasibility of MapReduce-based query system in the real-world, we deployed the system on PlanetLab. 
-To compare our MapReduce-based query approach against a DHT based range query algorithm, we evaluate SWORD~\cite{sword} analytically and via a simulation.
 \subsection{SWORD}
-SWORD provides a resource discovery system that allows end users to locate a subset of nodes which satisfy their requirements in a pool using DHT.
-The original DHT allows keeping a <Key, Value> pair on distributed nodes. 
-Each key is hashed to a node ID, and the appropriate node, whose node ID is the closest to the hashed key value clock-wise direction on a P2P ring structure~\cite{chord}~\cite{pastry}, keeps the <Key, Value> pair. 
-However, mapping a resource attribute name (e.g.,free memory) to a DHT entry key and associating an attribute value (e.g.,2GB) to a DHT entry value cannot support a resource discovery based on a value range. 
+SWORD is a DHT-based resource discovery system.
+In the original DHT, each key is hashed to a node ID, and the appropriate node, whose node ID is the closest to the hashed key value clock-wise direction on a P2P ring structure~\cite{chord}~\cite{pastry}, keeps the <Key, Value> pair. 
+However, mapping a resource attribute name (e.g., free memory) to a DHT entry key and associating an attribute value (e.g., 2GB) to a DHT entry value cannot support a resource discovery based on a value range. 
 To overcome this limitation, SWORD maps an attribute name and a value to a DHT entry key. Among $n$ bits of a DHT key, SWORD allocates $m$ bits for attribute indexing, where $n>m$. 
 Of the remaining $n-m$ bits, $k$ bits are designated as value expression bits, and a random value is filled in remaining $n-m-k$ bits.
 The mapping is performed once per an attribute for every information update event, and the entire resource information is conveyed to the calculated DHT key as a value.
@@ -311,8 +315,10 @@ A node whose free disk space is 121GB sets its free disk attribute key as in Fig
 To find nodes whose free disk space is between 64GB and 128GB, SWORD first decides the query begin address by setting attribute bits as $0010$, value bits as 64GB, and random bits as all 0x0s, shown in Figure~\ref{fig:sword} (b).
 For the query end address, it sets attribute index bits as $0010$, value bits as 128GB, and random bits as all 0xFs as in Figure~\ref{fig:sword} (c).
 Nodes between the begin address and end address will satisfy the query. 
-If multiple attributes need to be considered, one representative attribute is selected randomly, and the query range is determined based on the requirement of the randomly selected representative attribute.
-In addition to a resource matching, SWORD provides an \textit{optimizer} module to select optimal resources among multiple candidate nodes. 
+Other than the above \textit{SingleQuery} method, SWORD supports the \textit{MultiQuery} method, which does not publish entire resource information to every DHT key converted from each resource attribute.
+According to the their experiments, \textit{SinlgeQuery} outperforms \textit{MultiQuery}, so we analyze \textit{SingleQuery} only.
+If multiple attributes need to be considered, the query range is determined based on the requirement of one randomly selected representative attribute.
+To select optimal resources among multiple candidate nodes, SWORD provides an \textit{optimizer} module.
 \subsection{Performance Analysis}
 In this section, we compare the performance of MapReduce-based query system and SWORD analytically. 
 Our analysis focuses on: (1)$N_Q$, Number of Visited Nodes to Complete a Query, (2)$L_Q$, Query Latency, (3)$B_Q$, Query Bandwidth, and (4)$B_U$, Resource Information Update Bandwidth.
